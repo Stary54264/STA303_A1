@@ -1,6 +1,6 @@
 # Rubric
 
-## Introduction
+### Introduction
 
 The introduction should be about 2-3 paragraphs in length. The introduction is self-contained and tells the
 reader everything they need to know to understand why this study is being conducted. This includes:
@@ -22,7 +22,7 @@ how does the work of others fit into this goal/study).
 will be employed in the paper (i.e., what types of procedures will be
 used) and how these allow the research goal to be met.
 
-## Methods
+### Methods
 
 The methods section should be about 2-3 paragraphs in length and should not present any results or data
 summaries. The methods section is self-contained and tells the reader what statistical procedures will be used in the study
@@ -43,7 +43,7 @@ the model.
 predictors are significant and how much variation exists in the
 response.
 
-## Results
+### Results
 
 The results section introduces the data used and highlights important attributes or characteristics of the
 variables. It also walks the reader through the key steps in applying the statistical procedures mentioned in
@@ -81,7 +81,7 @@ used correctly. The discussion should flow logically, beginning with an
 initial model based on the cited literature and ending with the result
 that will be interpreted in the conclusion.
 
-## Conclusion
+### Conclusion
 
 The conclusion section should be about 1-2 paragraphs in length and should refer to figures/tables from the
 results section as needed (generally no new evidence is presented here).
