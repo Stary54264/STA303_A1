@@ -5,20 +5,20 @@
 The introduction should be about 2-3 paragraphs in length. The introduction is self-contained and tells the
 reader everything they need to know to understand why this study is being conducted. This includes:
 
-- [ ] A strong/convincing argument for the importance of this study,
+- [X] A strong/convincing argument for the importance of this study,
 supported by peer-reviewed evidence (i.e. why this study is relevant to
 other people).
 
-- [ ] Summaries of at least three peer-reviewed articles on the same area,
+- [X] Summaries of at least three peer-reviewed articles on the same area,
 topic, or question as this study. These should concisely describe the
 main conclusion/result in the context of the study sample.
 
-- [ ] The research objective, goal, or question of this study is explicitly
+- [X] The research objective, goal, or question of this study is explicitly
 stated (i.e., what this study is going to do) and a strong connection is
 explicitly drawn between the literature summaries and this goal (i.e.,
 how does the work of others fit into this goal/study).
 
-- [ ] A brief but correct overview of the general statistical techniques that
+- [X] A brief but correct overview of the general statistical techniques that
 will be employed in the paper (i.e., what types of procedures will be
 used) and how these allow the research goal to be met.
 
