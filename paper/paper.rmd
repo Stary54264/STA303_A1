@@ -1,35 +1,33 @@
 ---
-title: "Analyzing Influencing Factors of House Prices in Ames by Linear Regression"
+title: "Analyzing Influencing Factors on Family Size in Portugal"
 author: "Jiadong Wang, Yanzun Jiang"
-date: today
-date-format: long
+date: "2025-02-03"
 thanks: "Code and data supporting this paper is available at: <https://github.com/Stary54264/factors_affect_family_size_in_portugal>"
 output: pdf_document
-number-sections: true
 toc: true
 bibliography: references.bib
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
 ```
 
-## R Markdown
+\newpage
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Introduction
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Understanding the factors that influence family size is crucial for shaping social and economic policies. In many societies, particularly those with lower GDP per capita, family size is often linked to cultural and socioeconomic factors such as literacy levels and the age at which individuals marry. Portugal, despite being a European country, had a GDP per capita in 1980 comparable to that of Mexico, making it an interesting case study for fertility patterns. Prior research suggests that rural families tend to have more children than urban families, and birth rates may vary based on educational attainment and marital timing. Building on these findings, our study aims to answer this question: **"How do literacy and age of a marriage affect family size?"**.
 
-```{r cars}
-summary(cars)
-```
+Existing literature provides valuable insights into the relationship between family size, literacy, and marital age. Studies have shown that higher literacy levels among women are associated with reduced fertility rates due to increased awareness of family planning and career aspirations [@BMC]. Similarly, research on marriage timing suggests that early marriage is linked to larger family sizes due to prolonged reproductive periods [@BMC; @OPHJ]. Comparative studies in China and India further indicate that shifting social norms and economic conditions play a crucial role in fertility decisions [@SJ]. These findings highlight the importance of investigating how these variables interact within the Portuguese context.
 
-## Including Plots
+To analyze this relationship, we will use Generalized Linear Models (GLMs) as they are well-suited for count data like family size. Specifically, Poisson regression or negative binomial regression will be considered based on the presence of overdispersion. Exploratory data analysis will be conducted to summarize key variables, followed by model selection techniques to identify the best-fitting statistical model. R [@r] will be used to conduct this, and packages including `tidyverse` [@tidyverse], `here` [@here], `knitr` [@knitr], and `modelsummary` [@modelsummary] will also be used. The final model will be interpreted and draw meaningful conclusions about the relationship between literacy, age at marriage, and family size in Portugal.
 
-You can also embed plots, for example:
+# Methods
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+\newpage
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# References
