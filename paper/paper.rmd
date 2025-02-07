@@ -20,13 +20,23 @@ library(tidyverse)
 
 # Introduction
 
-Understanding the factors that influence family size is crucial for shaping social and economic policies. In many societies, particularly those with lower GDP per capita, family size is often linked to cultural and socioeconomic factors such as literacy levels and the age at which individuals marry. Portugal, despite being a European country, had a GDP per capita in 1980 comparable to that of Mexico, making it an interesting case study for fertility patterns. Prior research suggests that rural families tend to have more children than urban families, and birth rates may vary based on educational attainment and marital timing. Building on these findings, our study aims to answer this question: **"How do literacy and age of a marriage affect family size?"**.
+Understanding the factors that influence family size is crucial for shaping social and economic policies. In many societies, family size is often linked to cultural and socioeconomic factors such as literacy levels and the age at which individuals marry. Portugal, despite being a European country, had a GDP per capita in 1980 comparable to that of Mexico, making it an interesting case study for fertility patterns. Prior research suggests that rural families tend to have more children than urban families, and birth rates may vary based on educational attainment and marital timing. Building on these findings, our study aims to answer this question: **"How do literacy and age of a marriage affect family size?"**.
 
-Existing literature provides valuable insights into the relationship between family size, literacy, and marital age. Studies have shown that higher literacy levels among women are associated with reduced fertility rates due to increased awareness of family planning and career aspirations [@BMC]. Similarly, research on marriage timing suggests that early marriage is linked to larger family sizes due to prolonged reproductive periods [@BMC; @OPHJ]. Comparative studies in China and India further indicate that shifting social norms and economic conditions play a crucial role in fertility decisions [@SJ]. These findings highlight the importance of investigating how these variables interact within the Portuguese context.
+Previous studies have shown that higher literacy levels among women are associated with reduced fertility rates due to increased awareness of family planning and career aspirations [@BMC]. Similarly, research on marriage timing suggests that early marriage is linked to larger family sizes due to prolonged reproductive periods [@BMC; @OPHJ]. Comparative studies in China and India further indicate that shifting social norms and economic conditions play a crucial role in fertility decisions [@SJ]. These findings highlight the importance of investigating how these variables interact within the Portuguese context.
 
 To analyze this relationship, we will use Generalized Linear Models (GLMs) as they are well-suited for count data like family size. Specifically, Poisson regression or negative binomial regression will be considered based on the presence of overdispersion. Exploratory data analysis will be conducted to summarize key variables, followed by model selection techniques to identify the best-fitting statistical model. R [@r] will be used to conduct this, and packages including `tidyverse` [@tidyverse], `here` [@here], `knitr` [@knitr], and `modelsummary` [@modelsummary] will also be used. The final model will be interpreted and draw meaningful conclusions about the relationship between literacy, age at marriage, and family size in Portugal.
 
 # Methods
+
+To investigate the relationship between literacy, age at marriage, and family size, we will employ Generalized Linear Models (GLMs), specifically Poisson or negative binomial regression models. Childbirth follows the Poisson process, which assumes that events occur independently and at a constant rate over time, and this makes Poisson distribution an appropriate choice for the data. However, if the data exhibit overdispersion (the variance is significantly greater than the mean), a negative binomial regression model may be considered, as it introduces a dispersion parameter to allow for greater variability.
+
+The primary predictor variables of interest are literacy and age at marriage, as they might influence family size. Interaction effects will also be considered to assess whether the relationship between literacy and family size depends on marital age. These variables are relevant since prior research suggests that rural families tend to have more children, and economic conditions may influence both literacy levels and marriage timing.
+
+The significance of predictors will be determined using hypothesis tests and t-tests on coefficients, with p-values and confidence intervals providing statistical evidence. By conducting an ANOVA test, both explained and unexplained variations would be determined.
+
+# Results
+
+# Conclusion
 
 \newpage
 
