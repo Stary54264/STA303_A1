@@ -3,7 +3,7 @@ title: "sta303-hw1"
 output: html_document
 date: "2025-02-06"
 ---
-h
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
