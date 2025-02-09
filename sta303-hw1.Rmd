@@ -19,6 +19,8 @@ library(MASS)
 library(ggplot2)
 library(here)
 load(here::here("data/Portugal.RData"))
+install.packages("kableExtra", repos = "https://cloud.r-project.org/")
+
 
 
 ```
@@ -33,44 +35,58 @@ table(portugal$literacy)
 table(portugal$ageMarried)
 
 
-# 加载必要的库
-library(knitr)
+
 library(dplyr)
+library(knitr)
+library(kableExtra)
 
 
 
-
-numeric_summary <- portugal %>%
-  select_if(is.numeric) %>%
-  summarise_all(list(
-    Min = ~min(., na.rm = TRUE),
-    Median = ~median(., na.rm = TRUE),
-    Mean = ~mean(., na.rm = TRUE),
-    Max = ~max(., na.rm = TRUE),
-    SD = ~sd(., na.rm = TRUE)
-  )) %>%
-  pivot_longer(cols = everything(),
-               names_to = c("Variable", ".value"),
-               names_sep = "_")
+numerical_summary <- portugal %>%
+  select(where(is.numeric)) %>%
+  summarise(
+    across(
+      everything(),
+      list(
+        Mean = ~ mean(.x, na.rm = TRUE),
+        SD = ~ sd(.x, na.rm = TRUE),
+        Min = ~ min(.x, na.rm = TRUE),
+        Max = ~ max(.x, na.rm = TRUE)
+      )
+    )
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = c("Variable", ".value"),
+    names_sep = "_"
+  )
 
 
 categorical_summary <- portugal %>%
-  select_if(~is.factor(.) || is.character(.)) %>%
-  summarise_all(~list(table(.))) %>%
-  pivot_longer(cols = everything(),
-               names_to = "Variable",
-               values_to = "Frequency")
+  select(where(is.factor)) %>%
+  summarise(
+    across(
+      everything(),
+      ~ paste(names(table(.x)), "(", table(.x), ")", collapse = "\n")
+    )
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "Variable",
+    values_to = "Summary"
+  )
 
 
-cat("Summary of Numeric Variables:\n")
-kable(numeric_summary, caption = "Summary of  Numeric Variables", digits = 3)
+numerical_summary %>%
+  kbl(caption = "Numerical Summary Table for Dataset 'portugal'", align = "l") %>%
+  kableExtra::kable_styling(full_width = FALSE, position = "center") %>%
+  kableExtra::column_spec(3, width = "20em") 
 
-cat("Summary of Categorical Variables:\n")
-for (i in seq_along(categorical_summary$Variable)) {
-  cat(paste0("\nVariable: ", categorical_summary$Variable[i], "\n"))
-  print(categorical_summary$Frequency[[i]])
-}
 
+categorical_summary %>%
+  kbl(caption = "Categorical Summary Table for Dataset 'portugal'", align = "l") %>%
+  kableExtra::kable_styling(full_width = FALSE, position = "center") %>%
+  kableExtra::column_spec(2, width = "30em") 
 
 
 
@@ -148,50 +164,72 @@ portugal$logYearsMarried = log(pmax(1, portugal$monthsSinceM)/12)
 #set reference-"18to20"
 portugal$ageMarried = relevel(portugal$ageMarried, "18to20")
 
-model1 = glm(children ~offset(logYearsMarried) + literacy + ageMarried, data = portugal, family = poisson)
+poi_model = glm(children ~offset(logYearsMarried) + literacy + ageMarried, data = portugal, family = poisson)
 
-knitr::kable(summary(model1)$coef, digits = 3)
+knitr::kable(summary(poi_model)$coef, digits = 3)
+
+
+
+library(dplyr)
+library(knitr)
+
+
+model_summary <- summary(poi_model)
+
+
+coef_summary <- as.data.frame(model_summary$coefficients)
+
+
+colnames(coef_summary) <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
+
+
+knitr::kable(coef_summary, caption = "Summary Table for Model: poi_model", digits = 3, align = "c") %>%
+  kableExtra::kable_styling(full_width = FALSE, position = "center") %>%
+  kableExtra::column_spec(1, bold = TRUE) 
+
+
+
 ```
 
 
 
 ```{r}
-model1CI = as.data.frame(exp(confint(model1)[-1,]))
-model1CI$level = gsub(paste(names(model1$xlevels), collapse='|'),
-   "", rownames(model1CI))
-model1CI$variable=unlist(strsplit(rownames(model1CI),model1CI$level))
-model1CI$x = 1:nrow(model1CI)
-model1CI$cex = sqrt(1/apply(log(model1CI[,1:2]),1,diff))
-forXaxis = tapply(model1CI$x, model1CI$variable, mean)
+poi_modelCI = as.data.frame(exp(confint(poi_model)[-1,]))
+poi_modelCI$level = gsub(paste(names(poi_model$xlevels), collapse='|'),
+   "", rownames(poi_modelCI))
+poi_modelCI$variable=unlist(strsplit(rownames(poi_modelCI),poi_modelCI$level))
+poi_modelCI$x = 1:nrow(poi_modelCI)
+poi_modelCI$cex = sqrt(1/apply(log(poi_modelCI[,1:2]),1,diff))
+forXaxis = tapply(poi_modelCI$x, poi_modelCI$variable, mean)
 
-model1CI[1:3,]
+poi_modelCI[1:3,]
 ```
 ```{r}
-matplot(model1CI[,1:2], type='n',
+matplot(poi_modelCI[,1:2], type='n',
    xaxt='n', bty='n', xaxt='n',
    log='y', ylab='RR')
 
-segments(model1CI$x, model1CI[,1],
-   model1CI$x, model1CI[,2])
+segments(poi_modelCI$x, poi_modelCI[,1],
+   poi_modelCI$x, poi_modelCI[,2])
 
 
-numeric_coef <- as.numeric(as.character(model1CI$coef[-1]))
-numeric_coef <- rep(0, length(model1CI$x))  # Ensure the same length
+numeric_coef <- as.numeric(as.character(poi_modelCI$coef[-1]))
+numeric_coef <- rep(0, length(poi_modelCI$x))  # Ensure the same length
 
- points(model1CI$x,
+ points(poi_modelCI$x,
    exp(numeric_coef), pch=15,
-   cex = model1CI$cex, col = '#00000030')
+   cex = poi_modelCI$cex, col = '#00000030')
  
 
  
-mtext(model1CI$level, 1, at=model1CI$x,
+mtext(poi_modelCI$level, 1, at=poi_modelCI$x,
    las=3, line=-1)
 
 mtext(names(forXaxis), 1, at=forXaxis,
    line=-2)
 abline(h=1, lty=3)
 
-mtext(model1CI$level, side = 1, at = model1CI$x, las = 1, line = 3, cex = 0.5)
+mtext(poi_modelCI$level, side = 1, at = poi_modelCI$x, las = 1, line = 3, cex = 0.5)
 ```
 
 
@@ -203,27 +241,45 @@ mtext(model1CI$level, side = 1, at = model1CI$x, las = 1, line = 3, cex = 0.5)
 #.rs.restartR()
 
 library('glmmTMB')
-model2 = glmmTMB(children ~ offset(logYearsMarried) + literacy +
+NB_model = glmmTMB(children ~ offset(logYearsMarried) + literacy +
    ageMarried, data = portugal,family=nbinom2)
+
+
+
+NB_model_summary <- summary(NB_model)
+
+
+nb_coef_summary <- as.data.frame(NB_model_summary$coefficients$cond)
+
+
+colnames(nb_coef_summary) <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
+
+格
+knitr::kable(nb_coef_summary, caption = "Summary Table for Model: NB_model", digits = 3, align = "c") %>%
+  kableExtra::kable_styling(full_width = FALSE, position = "center") %>%
+  kableExtra::column_spec(1, bold = TRUE) 
+
 ```
+
+
 
 ```{r}
 knitr::kable(
-   rbind(confint(model2)[1:7,c(3,1,2)],
- sd=1/sqrt(confint(model2, parm='sigma'))[c(3,2,1)]), digits=3)
+   rbind(confint(NB_model)[1:7,c(3,1,2)],
+ sd=1/sqrt(confint(NB_model, parm='sigma'))[c(3,2,1)]), digits=3)
 ```
 
 
 ```{r}
-model2FitCI = as.data.frame(exp(confint(model2)[-1,]))
-model2FitCI$level = gsub(paste(names(model2$xlevels), collapse='|'),
-   "", rownames(model2FitCI))
-model2FitCI$variable=unlist(strsplit(rownames(model2FitCI),model2FitCI$level))
-model2FitCI$x = 1:nrow(model2FitCI)
-model2FitCI$cex = sqrt(1/apply(log(model2FitCI[,1:2]),1,diff))
-forXaxis = tapply(model2FitCI$x, model2FitCI$variable, mean)
+NB_modelFitCI = as.data.frame(exp(confint(NB_model)[-1,]))
+NB_modelFitCI$level = gsub(paste(names(NB_model$xlevels), collapse='|'),
+   "", rownames(NB_modelFitCI))
+NB_modelFitCI$variable=unlist(strsplit(rownames(NB_modelFitCI),NB_modelFitCI$level))
+NB_modelFitCI$x = 1:nrow(NB_modelFitCI)
+NB_modelFitCI$cex = sqrt(1/apply(log(NB_modelFitCI[,1:2]),1,diff))
+forXaxis = tapply(NB_modelFitCI$x, NB_modelFitCI$variable, mean)
 
-model2FitCI[1:3,]
+NB_modelFitCI[1:3,]
 ```
 
 ```{r}
@@ -231,7 +287,7 @@ model2FitCI[1:3,]
 ```
 
 ```{r}
-exp(confint(model2, 1))
-1/sqrt(confint(model2, parm = "sigma"))
+exp(confint(NB_model, 1))
+1/sqrt(confint(NB_model, parm = "sigma"))
 ```
 
