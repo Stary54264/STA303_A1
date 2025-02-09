@@ -33,6 +33,50 @@ table(portugal$literacy)
 table(portugal$ageMarried)
 
 
+# 加载必要的库
+library(knitr)
+library(dplyr)
+
+
+
+
+numeric_summary <- portugal %>%
+  select_if(is.numeric) %>%
+  summarise_all(list(
+    Min = ~min(., na.rm = TRUE),
+    Median = ~median(., na.rm = TRUE),
+    Mean = ~mean(., na.rm = TRUE),
+    Max = ~max(., na.rm = TRUE),
+    SD = ~sd(., na.rm = TRUE)
+  )) %>%
+  pivot_longer(cols = everything(),
+               names_to = c("Variable", ".value"),
+               names_sep = "_")
+
+
+categorical_summary <- portugal %>%
+  select_if(~is.factor(.) || is.character(.)) %>%
+  summarise_all(~list(table(.))) %>%
+  pivot_longer(cols = everything(),
+               names_to = "Variable",
+               values_to = "Frequency")
+
+
+cat("Summary of Numeric Variables:\n")
+kable(numeric_summary, caption = "Summary of  Numeric Variables", digits = 3)
+
+cat("Summary of Categorical Variables:\n")
+for (i in seq_along(categorical_summary$Variable)) {
+  cat(paste0("\nVariable: ", categorical_summary$Variable[i], "\n"))
+  print(categorical_summary$Frequency[[i]])
+}
+
+
+
+
+
+
+
 ```
 
 ## Including Plots
@@ -146,6 +190,8 @@ mtext(model1CI$level, 1, at=model1CI$x,
 mtext(names(forXaxis), 1, at=forXaxis,
    line=-2)
 abline(h=1, lty=3)
+
+mtext(model1CI$level, side = 1, at = model1CI$x, las = 1, line = 3, cex = 0.5)
 ```
 
 
@@ -164,7 +210,7 @@ model2 = glmmTMB(children ~ offset(logYearsMarried) + literacy +
 ```{r}
 knitr::kable(
    rbind(confint(model2)[1:7,c(3,1,2)],
- sd=1/sqrt(confint(model2, parm='sigma'))[c(3,1,2)]), digits=3)
+ sd=1/sqrt(confint(model2, parm='sigma'))[c(3,2,1)]), digits=3)
 ```
 
 
@@ -181,44 +227,6 @@ model2FitCI[1:3,]
 ```
 
 ```{r}
-matplot(model2FitCI[,1:2], type='n',
-   xaxt='n', bty='n', xaxt='n',
-   log='y', ylab='RR')
-
-segments(model2FitCI$x, model2FitCI[,1],
-   model2FitCI$x, model2FitCI[,2])
-
-points(model2FitCI$x,
-   exp(model1$coef[-1]), pch=15,
-   cex = model2FitCI$cex, col = '#00000030')
-
-mtext(model2FitCI$level, 1, at=model1CI$x,
-   las=3, line=-1)
-
-mtext(names(forXaxis), 1, at=forXaxis,
-   line=-2)
- abline(h=1, lty=3)
- 
- 
- mtext(names(forXaxis), 1, at=forXaxis,
-   line=-2)
- abline(h=1, lty=3)
- 
-# 调整绘图边距以避免标签重叠
-par(mar = c(12, 4, 4, 2) + 0.1)  # 增加底部边距
-
-# 修改x轴标签的显示方式
-mtext(
-  model2FitCI$level,  # 原标签
-  side = 1,           # 放置在x轴
-  at = model2FitCI$x, # 对应的x轴位置
-  las = 2,            # 标签旋转为垂直
-  line = 5,           # 调整标签与坐标轴的距离
-  cex = 0.6           # 缩小字体大小，避免过于拥挤
-)
-
-# 添加标题（可选）
-title(main = "Adjusted Relative Risks", cex.main = 1.2)  # 增加标题和字体大小
 
 ```
 
