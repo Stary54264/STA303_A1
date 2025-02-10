@@ -116,16 +116,6 @@ ggplot(portugal, aes(x = literacy, y = children)) +
 
 
 
-# Scatterplot with Regression Line
-ggplot(portugal, aes(x = age, y = children, color = literacy)) +
-  geom_point(size = 3, alpha = 0.7) +
-  geom_smooth(method = "lm", se = TRUE, color = "black") +
-  theme_minimal() +
-  labs(title = "Relationship between Age and Number of Children",
-       x = "Age",
-       y = "Number of Children",
-       color = "Literacy")
-
 
 ggplot(portugal, aes(x = ageMarried, y = children, fill = literacy)) +
   geom_bar(stat = "summary", fun = "mean", position = "dodge") +
@@ -137,24 +127,10 @@ ggplot(portugal, aes(x = ageMarried, y = children, fill = literacy)) +
        fill = "Literacy")
 
 
-ggplot(portugal, aes(x = pregnancies, fill = literacy)) +
-  geom_histogram(aes(y = ..density..), binwidth = 1, color = "yellow", alpha = 0.6) +
-  geom_density(alpha = 0.4) +
-  theme_minimal() +
-  labs(title = "Distribution of Number of Pregnancies by Literacy",
-       x = "Number of Pregnancies",
-       y = "Density",
-       fill = "Literacy")
 
 
-ggplot(portugal, aes(x = ageMarried, y = children, fill = literacy)) +
-  geom_violin(trim = FALSE, scale = "width", alpha = 0.7) +
-  geom_jitter(shape = 1, color = "black", width = 0.2, alpha = 0.6) +
-  theme_minimal() +
-  labs(title = "Distribution of Number of Children by Age Married and Literacy",
-       x = "Age Married",
-       y = "Number of Children",
-       fill = "Literacy")
+
+
 
 ```
 
@@ -183,7 +159,7 @@ coef_summary <- as.data.frame(model_summary$coefficients)
 colnames(coef_summary) <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
 
 
-knitr::kable(coef_summary, caption = "Summary Table for Model: poi_model", digits = 3, align = "c") %>%
+knitr::kable(coef_summary, caption = "Comparison of the log-rate ratios and 95% confidence intervals for Negative Binomial model relating literacy and age at marriage to the number of children, with an offset for years married. The results indicate similar trends as the Poisson model, with literacy being significant, and age at marriage having mixed effects. The reference category for age at marriage is 18 to 20 years.", digits = 3, align = "c") %>%
   kableExtra::kable_styling(full_width = FALSE, position = "center") %>%
   kableExtra::column_spec(1, bold = TRUE) 
 
@@ -254,7 +230,7 @@ nb_coef_summary <- as.data.frame(NB_model_summary$coefficients$cond)
 
 colnames(nb_coef_summary) <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
 
-格
+
 knitr::kable(nb_coef_summary, caption = "Summary Table for Model: NB_model", digits = 3, align = "c") %>%
   kableExtra::kable_styling(full_width = FALSE, position = "center") %>%
   kableExtra::column_spec(1, bold = TRUE) 
