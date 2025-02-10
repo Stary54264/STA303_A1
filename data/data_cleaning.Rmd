@@ -75,15 +75,14 @@ for(D in intersect(names(portugal), names(formats))){
   			levels=formats[[D]]$code, 
 				labels=formats[[D]]$label)
 }
-portugal$ageMarried = relevel(portugal$ageMarried, '22to25')
 portugal$region = relevel(portugal$region, 'lt10k')
 
-if(TRUE) save(portugal, file='raw_data.RData')
+if(TRUE) save(portugal, file='Portugal.RData')
 ```
 
 ```{r thedata}
 head(portugal)
-table(portugal$region)
+table(portugal$ageMarried)
 ```
 
 Region is `lt10k` rural areas (less than 10,000 people), towns of size 10-20k, 20k+, and the two largest cities (Lisbon and Porto).

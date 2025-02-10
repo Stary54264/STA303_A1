@@ -14,6 +14,13 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
+library(here)
+library(knitr)
+library(gridExtra)
+library(patchwork)
+library(MASS)
+library(glmmTMB)
+load(here::here("data/Portugal.RData"))
 ```
 
 \newpage
@@ -24,7 +31,7 @@ Understanding the factors that influence family size is crucial for shaping soci
 
 Previous studies have shown that higher literacy levels among women are associated with reduced fertility rates due to increased awareness of family planning and career aspirations [@BMC]. Similarly, research on marriage timing suggests that early marriage is linked to larger family sizes due to prolonged reproductive periods [@BMC; @OPHJ]. Comparative studies in China and India further indicate that shifting social norms and economic conditions play a crucial role in fertility decisions [@SJ]. These findings highlight the importance of investigating how these variables interact within the Portuguese context.
 
-To analyze this relationship, we will use Generalized Linear Models (GLMs) as they are well-suited for count data like family size. Specifically, Poisson regression or negative binomial regression will be considered based on the presence of overdispersion. Exploratory data analysis will be conducted to summarize key variables, followed by model selection techniques to identify the best-fitting statistical model. R [@r] will be used to conduct this, and packages including `tidyverse` [@tidyverse], `here` [@here], `knitr` [@knitr], and `MASS` [@MASS] will also be used. The final model will be interpreted and draw meaningful conclusions about the relationship between literacy, age at marriage, and family size in Portugal.
+To analyze this relationship, we will use Generalized Linear Models (GLMs) as they are well-suited for count data like family size. Specifically, Poisson regression or negative binomial regression will be considered based on the presence of overdispersion. Exploratory data analysis will be conducted to summarize key variables, followed by model selection techniques to identify the best-fitting statistical model. R [@r] will be used to conduct this, and packages including `tidyverse` [@tidyverse], `here` [@here], `knitr` [@knitr], `kableExtra` [@kableExtra], `patchwork` [@patchwork], `xMASS` [@MASS], and `glmmTMB` [@glmmTMB] will also be used. The final model will be interpreted and draw meaningful conclusions about the relationship between literacy, age at marriage, and family size in Portugal.
 
 # Methods
 
@@ -35,6 +42,53 @@ The primary predictor variables of interest are literacy and age at marriage, as
 The significance of predictors will be determined using hypothesis tests and t-tests on coefficients, with p-values and confidence intervals providing statistical evidence. By conducting an ANOVA test, both explained and unexplained variations would be determined.
 
 # Results
+
+```{r}
+#| label: tbl-summarize
+#| tbl-cap: "1"
+#| echo: false
+
+kable(portugal |>
+        summarize(Mean = round(mean(children), 1),
+                  SD = round(sd(children), 1),
+                  Median = median(children),
+                  Minimum = min(children),
+                  Maximum = max(children),
+                  IQR = round(IQR(children), 1)))
+
+kable(portugal |>
+        count(literacy) |>
+        rename("Literacy Status" = literacy, "Count" = n))
+
+kable(portugal |>
+        count(ageMarried) |>
+        rename("Age at Marriage" = ageMarried, "Count" = n))
+
+grid.arrange(table1, table2, table3, ncol = 2)
+```
+
+```{r, fig.pos="H", fig.height=6, fig.width=8}
+#| label: fig-bar
+#| fig-cap: "Overview of key demographic variables: number of children in a family, literacy status, and age at marriage. The left panel (blue) displays the distribution of the number of children per family, showing a right-skewed pattern where most families have fewer children, with the highest frequency at 1 to 3 children. The top-right panel (green) represents literacy status, categorized as 'yes' (literate) or 'no' (illiterate). The majority of individuals are literate, with a much smaller proportion classified as illiterate. The bottom-right panel (red) illustrates the distribution of age at marriage, indicating that the most common age range for marriage is 22 to 25 years, followed by 20 to 22 and 25 to 30 years. Fewer individuals marry at very young (0 to 15, 15 to 18) or older ages (30 and above). These distributions provide critical context for subsequent Generalized Linear Model (GLM) analysis, as they highlight demographic patterns that may influence relationships between these variables."
+#| echo: false
+
+bar1 <- ggplot(portugal, aes(x = children)) +
+  geom_bar(fill = "blue", alpha = 0.7) +
+  theme_minimal() +
+  labs(x = "Age at Marriage (Years)", y = "Number of Individuals")
+
+bar2 <- ggplot(portugal, aes(x = literacy)) +
+  geom_bar(fill = "green", alpha = 0.7) +
+  theme_minimal() +
+  labs(x = "Age at Marriage (Years)", y = "Number of Individuals")
+
+bar3 <- ggplot(portugal, aes(x = ageMarried)) +
+  geom_bar(fill = "red", alpha = 0.7) +
+  theme_minimal() +
+  labs(x = "Age at Marriage (Years)", y = "Number of Individuals")
+
+bar1 + bar2 /bar3
+```
 
 # Conclusion
 
