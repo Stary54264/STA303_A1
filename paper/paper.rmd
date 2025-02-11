@@ -87,7 +87,7 @@ bar3 <- ggplot(portugal, aes(x = ageMarried)) +
 bar1 + bar2 / bar3
 ```
 
-The Poisson GLM was developed to investigate the relationship between literacy and age at marriage while accounting for the natural log of the duration of marriage through an offset term. The model includes literacy status and categorized age at marriage as predictor variables, with the reference group consisting of literate individuals who married between the ages of 22 and 25. The results (Table \@ref(tab:model-p)) indicate that illiteracy is a significant predictor (p = 0.000), suggesting that being illiterate is strongly positively associated with changes in the family size compared to literate individuals. Among the marriage age groups, individuals who married between 15-18 years (p = 0.025) and 18-20 years (p = 0.026) show significant differences from the reference category, implying that marrying at these ages has a notable impact. Conversely, marriage before 15, between 20-22, between 25-30, and after 30 do not show significant differences from the reference group. These findings highlight the role of literacy and specific marriage age ranges in influencing the outcome, though additional modeling techniques or interactions could be explored to refine the analysis further.
+The Poisson GLM was developed to investigate the relationship between literacy and age at marriage while accounting for the natural log of the duration of marriage through an offset term. The model includes literacy status and categorized age at marriage as predictor variables, with the reference group consisting of literate individuals who married between the ages of 22 and 25. The results (Table \@ref(tab:model-p)) indicate that illiteracy is a significant predictor (p = 0.000), suggesting that being illiterate is strongly positively associated with changes in the family size compared to literate individuals. Among the marriage age groups, individuals who married between 15-18 years (p = 0.025) and 18-20 years (p = 0.026) show significant differences from the reference category, implying that marrying at these ages has a notable impact. Conversely, marriage before 15, between 20-22, between 25-30, and after 30 do not show significant differences from the reference group. These findings highlight the role of literacy and specific marriage age ranges in influencing the outcome, though additional modeling techniques or interactions could be explored to refine the analysis further. Also, effects of the predictors on family size could be seen clearly in Figure \@ref(fig:effect).
 
 ```{r model-p, tab.cap="Logistic regression results showing the relationship between literacy and age at marriage with the response variable with significance level 0.05. Literacy is a significant predictor (p = 0.000), indicating a strong effect. Marriage between ages 15-18 and 18-20 also shows significance (p = 0.025 and 0.026, respectively), suggesting an impact on the outcome. Other age groups do not exhibit significant effects.", fig.pos="H", echo=FALSE}
 portugal$logYearsMarried <- log(pmax(1, portugal$monthsSinceM) / 12)
@@ -95,6 +95,32 @@ portugal$ageMarried <- relevel(portugal$ageMarried, "22to25")
 model_p <- glm(children ~ offset(logYearsMarried) + literacy + ageMarried,
                data = portugal, family = poisson)
 kable(summary(model_p)$coef, digits = 3)
+```
+
+```{r effect, fig.cap="Comparison of the relative risk (RR) estimates and 95% confidence intervals from a Poisson model examining literacy status and age at marriage. The reference category for literacy is literate, while different age groups at marriage are compared against a baseline. The results indicate no significant differences in RR across age groups, as all confidence intervals include 1. The effect of literacy shows a slightly larger estimate but remains within the range of non-significance at the 0.05 significance level.", fig.pos="H", fig.height=6, fig.width=8, message=FALSE, echo=FALSE}
+poi_modelCI <-  as.data.frame(exp(confint(model_p)[-1,]))
+poi_modelCI$level <- gsub(paste(names(model_p$xlevels), collapse='|'),
+   "", rownames(poi_modelCI))
+poi_modelCI$variable=unlist(strsplit(rownames(poi_modelCI),poi_modelCI$level))
+poi_modelCI$x <- 1:nrow(poi_modelCI)
+poi_modelCI$cex <- sqrt(1/apply(log(poi_modelCI[,1:2]),1,diff))
+forXaxis = tapply(poi_modelCI$x, poi_modelCI$variable, mean)
+matplot(poi_modelCI[,1:2], type='n', xaxt='n', bty='n', xaxt='n', log='y', ylab='RR')
+segments(poi_modelCI$x, poi_modelCI[,1],
+   poi_modelCI$x, poi_modelCI[,2])
+numeric_coef <- as.numeric(as.character(poi_modelCI$coef[-1]))
+numeric_coef <- rep(0, length(poi_modelCI$x))
+ points(poi_modelCI$x,
+   exp(numeric_coef), pch=15,
+   cex = poi_modelCI$cex)
+ 
+ 
+mtext(poi_modelCI$level, 1, at=poi_modelCI$x,
+   las=3, line=-1)
+mtext(names(forXaxis), 1, at=forXaxis,
+   line=-2)
+abline(h=1, lty=3)
+mtext(poi_modelCI$level, side = 1, at = poi_modelCI$x, las = 1, line = 3, cex = 0.5)
 ```
 
 We can see from the summary table that the variance of the number of children is significantly greater than the mean, suggesting the presence of overdispersion. This makes the Poisson GLM unsuitable, as it assumes equal mean and variance. A new model, the Negative Binomial GLM, accommodates overdispersion, was therefore employed. From Table \@ref(tab:model-nb), we can find that the intercept term is significant, with a value of -1.783 and a 95% confidence interval ranging from -1.822 to -1.744. Literacy shows a positive effect on family size, with an estimate of 0.148 and a confidence interval from 0.095 to 0.200, indicating that illiterate individuals tend to have more children. The age at marriage categories also show varying effects: marrying between 15 to 18 years and 18 to 20 years have positive and significant estimates of 0.084 and 0.069, respectively, suggesting that marrying at these ages is associated with larger family sizes. Confidence intervals of other age groups contains 0, which suggests that the coefficient is not significant. The standard deviation of the random effects is 0.265, with a confidence interval from 0.235 to 0.298, indicating variability in family size not explained by the predictors. Overall, the model suggests that both literacy status and age at marriage are significant predictors of family size, with the Negative Binomial GLM appropriately accounting for the observed overdispersion.
