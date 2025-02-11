@@ -62,13 +62,13 @@ commentary on all three of centre, spread and shape. If multivariate
 summaries are also presented, the discussion should describe how the
 relationship presented is relevant to the research problem.
 
-- [ ] Presentation of the results of all statistical procedures applied to
+- [X] Presentation of the results of all statistical procedures applied to
 address the research question. Estimates from models should be
 presented with a corresponding measure of error/variability. Results of
 hypothesis tests should include the test statistic, the corresponding
 p-value and the significance level used.
 
-- [ ] A discussion of the process involved in developing a suitable model
+- [X] A discussion of the process involved in developing a suitable model
 that addresses the research goal. When referencing multiple models,
 descriptive language is used to aid the reader in distinguishing
 between them (e.g. avoid labelling models as “model 1, model 2”).
@@ -88,22 +88,22 @@ results section as needed (generally no new evidence is presented here).
 The conclusion summarizes and interprets the results from the previous section and describes whether the
 results are consistent with what is already known about this area. This includes:
 
-- [ ] A formal statistical interpretation of the effect on the response of at
+- [X] A formal statistical interpretation of the effect on the response of at
 least one of the most important/relevant predictors in the chosen
 model and should be correct and in the context of the data.
 
-- [ ] An informal interpretation of the model results, focusing on what the
+- [X] An informal interpretation of the model results, focusing on what the
 chosen model says about the relationship between predictors and
 response as a whole in this project. This should be consistent with the
 model results and in the context of the data.
 
-- [ ] A comparison between the effects suggested by the model and the
+- [X] A comparison between the effects suggested by the model and the
 effects in the literature that was summarized earlier. The comparison
 should correctly address whether the effects from the model are
 supported by or contradictory to the literature, with in-text citations
 directing the reader to the relevant sources.
 
-- [ ] A closing statement that highlights how the results of this study can be
+- [X] A closing statement that highlights how the results of this study can be
 used to address the stated motivation from the introduction.
 
 ## Figures, Tables, and References
@@ -113,24 +113,24 @@ work described. They should be well-formatted and easy to understand, and in the
 should act as standalone information that can be understood without reading the core text.
 Figures, tables and references should satisfy:
 
-- [ ] The reference list/bibliography contains all source materials or articles
+- [X] The reference list/bibliography contains all source materials or articles
 mentioned in the written report. The list is well-formatted using an
 appropriate format (e.g., APA). In-text citations are included whenever
 information is summarized or mentioned from an external source (e.g.
 peer-reviewed article) and are in a consistent format as the reference
 list/bibliography.
 
-- [ ] No R code is present in the written report (e.g. code that produces
+- [X] No R code is present in the written report (e.g. code that produces
 tables/figures), and R output (as displayed in the R console) is not
 present.
 
-- [ ] Tables and figures include informative captions that cover 1) what is
+- [X] Tables and figures include informative captions that cover 1) what is
 presented and 2) what is the key message the reader should take
 away. Captions should ensure that the reader does not need to have
 read the report itself to understand what is presented in the
 table/figure.
 
-- [ ] Tables and figures are well designed (visually appealing, cohesive,
+- [X] Tables and figures are well designed (visually appealing, cohesive,
 and valuable). The information presented in each table/figure is easy
 to read and understand (e.g. avoids variable names from R, legible axis
 labels, etc.), makes sense to be presented in a single standalone unit,
