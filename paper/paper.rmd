@@ -3,7 +3,7 @@ title: "Analyzing Influencing Factors on Family Size in Portugal"
 author: "Jiadong Wang, Yanzun Jiang"
 date: "2025-02-03"
 thanks: "Code and data supporting this paper is available at: <https://github.com/Stary54264/factors_affect_family_size_in_portugal>"
-output: pdf_document
+output: bookdown::pdf_document2
 toc: true
 bibliography: references.bib
 ---
@@ -16,7 +16,7 @@ bibliography: references.bib
 library(tidyverse)
 library(here)
 library(knitr)
-library(gridExtra)
+library(kableExtra)
 library(patchwork)
 library(MASS)
 library(glmmTMB)
@@ -43,51 +43,52 @@ The significance of predictors will be determined using hypothesis tests and t-t
 
 # Results
 
-```{r}
-#| label: tbl-summarize
-#| tbl-cap: "1"
-#| echo: false
+The dataset includes key variables such as Number of Children in a Family (the response variable), Age at Marriage, and Literacy Status (the predictors). Statistical summaries (Table \@ref(tab:summarize1)) provide insights into the distribution and central tendencies of these variables, such as the mean number of children (2.3) and the frequency of age-at-marriage intervals. Visualizations (Figure \@ref(fig:bar)) further illustrate relationships, such as how family size varies with literacy status or age at marriage. These analyses guide model selection and interpretation, helping to identify patterns and trends in the data.
+
+```{r summarize1, tab.cap="Descriptive statistics of the number of children in a family, including mean, variance, median, minimum, maximum, and IQR are shown. The distribution of literacy status and age at marriage among the study population are also presented. The mean number of children is 2.3, indicating that, on average, families in the study population have slightly more than two children. Literacy status shows a majority of respondents reporting \"yes\", while age at marriage is distributed across various intervals, with the highest frequency in the 22 to 25 age group.", fig.pos="H", echo=FALSE}
 
 kable(portugal |>
         summarize(Mean = round(mean(children), 1),
-                  SD = round(sd(children), 1),
+                  Variance = round(var(children), 1),
                   Median = median(children),
                   Minimum = min(children),
                   Maximum = max(children),
                   IQR = round(IQR(children), 1)))
+```
+
+The number of children in a family, follows a right-skewed distribution, with most families having between 0 and 5 children. The center of this distribution appears to be around 2 children, while the spread extends up to approximately 15 children, though values beyond 10 are rare. The long right tail suggests that while large families exist, they are uncommon in the sample population. Literacy status is categorical and shows a strong imbalance, with the majority of individuals being literate. The frequency of literate individuals is significantly higher than illiterate individuals, indicating a high overall literacy rate in the sample. Age at marriage follows a roughly normal distribution, peaking between the ages of 22 and 25. The center of this distribution is likely around 22 to 25 years, with a spread covering a range from below 15 to above 30 years. The shape suggests that while some individuals marry very early or late, most tend to marry between 18 and 30 years. The relationship between literacy and age at marriage could be explored further to determine if literacy impacts marital age trends. A bivariate analysis could help assess whether literacy influences the likelihood of early or delayed marriage in the sample population.
+
+```{r, fig.pos="H", echo=FALSE}
 
 kable(portugal |>
         count(literacy) |>
-        rename("Literacy Status" = literacy, "Count" = n))
+        rename("Literacy Status" = literacy, "Count" = n)) |>
+  kable_styling(position = "center", latex_options = "HOLD_position")
 
 kable(portugal |>
         count(ageMarried) |>
-        rename("Age at Marriage" = ageMarried, "Count" = n))
-
-grid.arrange(table1, table2, table3, ncol = 2)
+        rename("Age at Marriage" = ageMarried, "Count" = n)) |>
+  kable_styling(position = "center", latex_options = "HOLD_position")
 ```
 
-```{r, fig.pos="H", fig.height=6, fig.width=8}
-#| label: fig-bar
-#| fig-cap: "Overview of key demographic variables: number of children in a family, literacy status, and age at marriage. The left panel (blue) displays the distribution of the number of children per family, showing a right-skewed pattern where most families have fewer children, with the highest frequency at 1 to 3 children. The top-right panel (green) represents literacy status, categorized as 'yes' (literate) or 'no' (illiterate). The majority of individuals are literate, with a much smaller proportion classified as illiterate. The bottom-right panel (red) illustrates the distribution of age at marriage, indicating that the most common age range for marriage is 22 to 25 years, followed by 20 to 22 and 25 to 30 years. Fewer individuals marry at very young (0 to 15, 15 to 18) or older ages (30 and above). These distributions provide critical context for subsequent Generalized Linear Model (GLM) analysis, as they highlight demographic patterns that may influence relationships between these variables."
-#| echo: false
+```{r bar, fig.cap="Overview of key demographic variables: number of children in a family, literacy status, and age at marriage. The left panel (blue) displays the distribution of the number of children per family, showing a right-skewed pattern where most families have fewer children, with the highest frequency at 1 to 3 children. The top-right panel (green) represents literacy status, categorized as 'yes' (literate) or 'no' (illiterate). The majority of individuals are literate, with a much smaller proportion classified as illiterate. The bottom-right panel (red) illustrates the distribution of age at marriage, indicating that the most common age range for marriage is 22 to 25 years, followed by 20 to 22 and 25 to 30 years. Fewer individuals marry at very young (0 to 15, 15 to 18) or older ages (30 and above). These distributions provide critical context for subsequent Generalized Linear Model (GLM) analysis, as they highlight demographic patterns that may influence relationships between these variables.", fig.pos="H", fig.height=6, fig.width=8, echo=FALSE}
 
 bar1 <- ggplot(portugal, aes(x = children)) +
   geom_bar(fill = "blue", alpha = 0.7) +
   theme_minimal() +
-  labs(x = "Age at Marriage (Years)", y = "Number of Individuals")
+  labs(x = "Number of Children in a Family", y = "Number of Individuals")
 
 bar2 <- ggplot(portugal, aes(x = literacy)) +
   geom_bar(fill = "green", alpha = 0.7) +
   theme_minimal() +
-  labs(x = "Age at Marriage (Years)", y = "Number of Individuals")
+  labs(x = "Literacy Status", y = "Number of Individuals")
 
 bar3 <- ggplot(portugal, aes(x = ageMarried)) +
   geom_bar(fill = "red", alpha = 0.7) +
   theme_minimal() +
   labs(x = "Age at Marriage (Years)", y = "Number of Individuals")
 
-bar1 + bar2 /bar3
+bar1 + bar2 / bar3
 ```
 
 # Conclusion
