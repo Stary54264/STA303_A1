@@ -49,12 +49,12 @@ The results section introduces the data used and highlights important attributes
 variables. It also walks the reader through the key steps in applying the statistical procedures mentioned in
 the methods to the data with the aim of addressing the research goals. This section includes:
 
-- [ ] Statistical summaries of the variables considered in the analysis. These
+- [X] Statistical summaries of the variables considered in the analysis. These
 are appropriate/correct for the data being presented. Summaries
 should be univariate in nature (i.e., each variable separately) but may
 be supplemented by multivariate summaries if desired.
 
-- [ ] A discussion of the statistical summaries presented, that correctly
+- [X] A discussion of the statistical summaries presented, that correctly
 comments on at least one of the centre, spread or shape of each
 variable in the context of the sample population. Specific emphasis
 should be placed on the response distribution with correct
