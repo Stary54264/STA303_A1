@@ -8,11 +8,7 @@ toc: true
 bibliography: references.bib
 ---
 
-```{r}
-#| include: false
-#| warning: false
-#| message: false
-
+```{r, include=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(here)
 library(knitr)
@@ -20,6 +16,7 @@ library(kableExtra)
 library(patchwork)
 library(MASS)
 library(glmmTMB)
+
 load(here::here("data/Portugal.RData"))
 ```
 
@@ -31,7 +28,7 @@ Understanding the factors that influence family size is crucial for shaping soci
 
 Previous studies have shown that higher literacy levels among women are associated with reduced fertility rates due to increased awareness of family planning and career aspirations [@BMC]. Similarly, research on marriage timing suggests that early marriage is linked to larger family sizes due to prolonged reproductive periods [@BMC; @OPHJ]. Comparative studies in China and India further indicate that shifting social norms and economic conditions play a crucial role in fertility decisions [@SJ]. These findings highlight the importance of investigating how these variables interact within the Portuguese context.
 
-To analyze this relationship, we will use Generalized Linear Models (GLMs) as they are well-suited for count data like family size. Specifically, Poisson regression or negative binomial regression will be considered based on the presence of overdispersion. Exploratory data analysis will be conducted to summarize key variables, followed by model selection techniques to identify the best-fitting statistical model. R [@r] will be used to conduct this, and packages including `tidyverse` [@tidyverse], `here` [@here], `knitr` [@knitr], `kableExtra` [@kableExtra], `patchwork` [@patchwork], `xMASS` [@MASS], and `glmmTMB` [@glmmTMB] will also be used. The final model will be interpreted and draw meaningful conclusions about the relationship between literacy, age at marriage, and family size in Portugal.
+To analyze this relationship, we will use Generalized Linear Models (GLMs) as they are well-suited for count data like family size. Specifically, Poisson regression or negative binomial regression will be considered based on the presence of overdispersion. Exploratory data analysis will be conducted to summarize key variables, followed by model selection techniques to identify the best-fitting statistical model. R [@r] will be used to conduct this, and packages including `tidyverse` [@tidyverse], `here` [@here], `knitr` [@knitr], `kableExtra` [@kableExtra], `patchwork` [@patchwork], `MASS` [@MASS], and `glmmTMB` [@glmmTMB] will also be used. The final model will be interpreted and draw meaningful conclusions about the relationship between literacy, age at marriage, and family size in Portugal.
 
 # Methods
 
@@ -43,10 +40,11 @@ The significance of predictors will be determined using hypothesis tests and t-t
 
 # Results
 
-The dataset includes key variables such as Number of Children in a Family (the response variable), Age at Marriage, and Literacy Status (the predictors). Statistical summaries (Table \@ref(tab:summarize1)) provide insights into the distribution and central tendencies of these variables, such as the mean number of children (2.3) and the frequency of age-at-marriage intervals. Visualizations (Figure \@ref(fig:bar)) further illustrate relationships, such as how family size varies with literacy status or age at marriage. These analyses guide model selection and interpretation, helping to identify patterns and trends in the data.
+The dataset includes key variables such as Number of Children in a Family (the response variable), Age at Marriage, and Literacy Status (the predictors). Statistical summaries (Table \@ref(tab:summarize)) provide insights into the distribution and central tendencies of these variables, such as the mean number of children (2.3) and the frequency of age-at-marriage intervals. Visualizations (Figure \@ref(fig:bar)) further illustrate relationships, such as how family size varies with literacy status or age at marriage. These analyses guide model selection and interpretation, helping to identify patterns and trends in the data.
 
-```{r summarize1, tab.cap="Descriptive statistics of the number of children in a family, including mean, variance, median, minimum, maximum, and IQR are shown. The distribution of literacy status and age at marriage among the study population are also presented. The mean number of children is 2.3, indicating that, on average, families in the study population have slightly more than two children. Literacy status shows a majority of respondents reporting \"yes\", while age at marriage is distributed across various intervals, with the highest frequency in the 22 to 25 age group.", fig.pos="H", echo=FALSE}
+The number of children in a family, follows a right-skewed distribution, with most families having between 0 and 5 children. The center of this distribution appears to be around 2 children, while the spread extends
 
+```{r summarize, tab.cap="Descriptive statistics of the number of children in a family, the distribution of literacy status, and age at marriage among the study population. The mean number of children is 2.3, indicating that, on average, families in the study population have slightly more than two children. Literacy status shows a majority of respondents reporting \"yes\", while age at marriage is distributed across various intervals, with the highest frequency in the 22 to 25 age group.", fig.pos="H", echo=FALSE}
 kable(portugal |>
         summarize(Mean = round(mean(children), 1),
                   Variance = round(var(children), 1),
@@ -56,10 +54,7 @@ kable(portugal |>
                   IQR = round(IQR(children), 1)))
 ```
 
-The number of children in a family, follows a right-skewed distribution, with most families having between 0 and 5 children. The center of this distribution appears to be around 2 children, while the spread extends up to approximately 15 children, though values beyond 10 are rare. The long right tail suggests that while large families exist, they are uncommon in the sample population. Literacy status is categorical and shows a strong imbalance, with the majority of individuals being literate. The frequency of literate individuals is significantly higher than illiterate individuals, indicating a high overall literacy rate in the sample. Age at marriage follows a roughly normal distribution, peaking between the ages of 22 and 25. The center of this distribution is likely around 22 to 25 years, with a spread covering a range from below 15 to above 30 years. The shape suggests that while some individuals marry very early or late, most tend to marry between 18 and 30 years. The relationship between literacy and age at marriage could be explored further to determine if literacy impacts marital age trends. A bivariate analysis could help assess whether literacy influences the likelihood of early or delayed marriage in the sample population.
-
 ```{r, fig.pos="H", echo=FALSE}
-
 kable(portugal |>
         count(literacy) |>
         rename("Literacy Status" = literacy, "Count" = n)) |>
@@ -71,8 +66,9 @@ kable(portugal |>
   kable_styling(position = "center", latex_options = "HOLD_position")
 ```
 
-```{r bar, fig.cap="Overview of key demographic variables: number of children in a family, literacy status, and age at marriage. The left panel (blue) displays the distribution of the number of children per family, showing a right-skewed pattern where most families have fewer children, with the highest frequency at 1 to 3 children. The top-right panel (green) represents literacy status, categorized as 'yes' (literate) or 'no' (illiterate). The majority of individuals are literate, with a much smaller proportion classified as illiterate. The bottom-right panel (red) illustrates the distribution of age at marriage, indicating that the most common age range for marriage is 22 to 25 years, followed by 20 to 22 and 25 to 30 years. Fewer individuals marry at very young (0 to 15, 15 to 18) or older ages (30 and above). These distributions provide critical context for subsequent Generalized Linear Model (GLM) analysis, as they highlight demographic patterns that may influence relationships between these variables.", fig.pos="H", fig.height=6, fig.width=8, echo=FALSE}
+up to approximately 15 children, though values beyond 10 are rare. The long right tail suggests that while large families exist, they are uncommon in the sample population. Literacy status is categorical and shows a strong imbalance, with the majority of individuals being literate. The frequency of literate individuals is significantly higher than illiterate individuals, indicating a high overall literacy rate in the sample. Age at marriage follows a roughly normal distribution, peaking between the ages of 22 and 25. The center of this distribution is likely around 22 to 25 years, with a spread covering a range from below 15 to above 30 years. The shape suggests that while some individuals marry very early or late, most tend to marry between 18 and 30 years. The relationship between literacy and age at marriage could be explored further to determine if literacy impacts marital age trends. A bivariate analysis could help assess whether literacy influences the likelihood of early or delayed marriage in the sample population.
 
+```{r bar, fig.cap="Overview of key variables: number of children in a family, literacy status, and age at marriage. The left panel (blue) displays the distribution of the number of children per family, showing a right-skewed pattern where most families have fewer children, with the highest frequency at 1 to 3 children. The top-right panel (green) represents literacy status, categorized as 'yes' (literate) or 'no' (illiterate). The majority of individuals are literate, with a much smaller proportion classified as illiterate. The bottom-right panel (red) illustrates the distribution of age at marriage, indicating that the most common age range for marriage is 22 to 25 years, followed by 20 to 22 and 25 to 30 years. Fewer individuals marry at very young (0 to 15, 15 to 18) or older ages (30 and above). These distributions provide critical context for subsequent Generalized Linear Model (GLM) analysis, as they highlight demographic patterns that may influence relationships between these variables.", fig.pos="H", fig.height=6, fig.width=8, echo=FALSE}
 bar1 <- ggplot(portugal, aes(x = children)) +
   geom_bar(fill = "blue", alpha = 0.7) +
   theme_minimal() +
@@ -91,7 +87,32 @@ bar3 <- ggplot(portugal, aes(x = ageMarried)) +
 bar1 + bar2 / bar3
 ```
 
+The Poisson GLM was developed to investigate the relationship between literacy and age at marriage while accounting for the natural log of the duration of marriage through an offset term. The model includes literacy status and categorized age at marriage as predictor variables, with the reference group consisting of literate individuals who married between the ages of 22 and 25. The results (Table \@ref(tab:model-p)) indicate that illiteracy is a significant predictor (p = 0.000), suggesting that being illiterate is strongly positively associated with changes in the family size compared to literate individuals. Among the marriage age groups, individuals who married between 15-18 years (p = 0.025) and 18-20 years (p = 0.026) show significant differences from the reference category, implying that marrying at these ages has a notable impact. Conversely, marriage before 15, between 20-22, between 25-30, and after 30 do not show significant differences from the reference group. These findings highlight the role of literacy and specific marriage age ranges in influencing the outcome, though additional modeling techniques or interactions could be explored to refine the analysis further.
+
+```{r model-p, tab.cap="Logistic regression results showing the relationship between literacy and age at marriage with the response variable with significance level 0.05. Literacy is a significant predictor (p = 0.000), indicating a strong effect. Marriage between ages 15-18 and 18-20 also shows significance (p = 0.025 and 0.026, respectively), suggesting an impact on the outcome. Other age groups do not exhibit significant effects.", fig.pos="H", echo=FALSE}
+portugal$logYearsMarried <- log(pmax(1, portugal$monthsSinceM) / 12)
+portugal$ageMarried <- relevel(portugal$ageMarried, "22to25")
+model_p <- glm(children ~ offset(logYearsMarried) + literacy + ageMarried,
+               data = portugal, family = poisson)
+kable(summary(model_p)$coef, digits = 3)
+```
+
+We can see from the summary table that the variance of the number of children is significantly greater than the mean, suggesting the presence of overdispersion. This makes the Poisson GLM unsuitable, as it assumes equal mean and variance. A new model, the Negative Binomial GLM, accommodates overdispersion, was therefore employed. From Table \@ref(tab:model-nb), we can find that the intercept term is significant, with a value of -1.783 and a 95% confidence interval ranging from -1.822 to -1.744. Literacy shows a positive effect on family size, with an estimate of 0.148 and a confidence interval from 0.095 to 0.200, indicating that illiterate individuals tend to have more children. The age at marriage categories also show varying effects: marrying between 15 to 18 years and 18 to 20 years have positive and significant estimates of 0.084 and 0.069, respectively, suggesting that marrying at these ages is associated with larger family sizes. Confidence intervals of other age groups contains 0, which suggests that the coefficient is not significant. The standard deviation of the random effects is 0.265, with a confidence interval from 0.235 to 0.298, indicating variability in family size not explained by the predictors. Overall, the model suggests that both literacy status and age at marriage are significant predictors of family size, with the Negative Binomial GLM appropriately accounting for the observed overdispersion.
+
+```{r model-nb, tab.cap="Logistic regression results showing the relationship between literacy and age at marriage with the response variable with significance level 0.05. Literacy is a significant predictor (p = 0.000), indicating a strong effect. Marriage between ages 15-18 and 18-20 also shows significance (p = 0.025 and 0.026, respectively), suggesting an impact on the outcome. Other age groups do not exhibit significant effects.", fig.pos="H", echo=FALSE}
+model_nb <- glmmTMB(children ~ offset(logYearsMarried) +
+                      literacy + ageMarried,
+                    data = portugal,family = nbinom2)
+kable(rbind(confint(model_nb)[1:7,c(3,1,2)],
+            sd = 1 / sqrt(confint(model_nb, parm='sigma'))[c(3,2,1)]),
+      digits = 3)
+```
+
 # Conclusion
+
+In conclusion, the analysis comparing Poisson and Negative Binomial GLMs for predicting family size based on literacy status and age at marriage, with years since marriage as an offset, revealed significant insights. The Poisson model, which assumes equal mean and variance, was found to be unsuitable due to overdispersion in the data, as indicated by the variance exceeding the mean. The Negative Binomial model, which accounts for overdispersion, provided a better fit and more reliable estimates. The results from the Negative Binomial GLM (Table \@ref(tab:model-nb)) showed that literacy status significantly affects family size, with individuals lacking literacy having a positive and significant effect (estimate = 0.148, 95% CI: 0.095 to 0.200). This suggests that lower literacy levels are associated with larger family sizes. Additionally, age at marriage categories, particularly marrying between 15 to 18 years and 18 to 20 years, also showed positive and significant effects, indicating that earlier marriage is associated with increased family size.
+
+The findings align with existing literature that highlights the influence of socio-economic factors, such as literacy, cultural norms, and age at marriage, on fertility rates. The positive association between lower literacy levels and larger family sizes is consistent with studies suggesting that education often leads to delayed marriage and smaller family sizes due to increased awareness and access to family planning resources [@BMC]. Similarly, the effect of age at marriage on family size supports the notion that earlier marriage extends the reproductive period, thereby increasing the likelihood of having more children. These results underscore the importance of considering socio-economic and cultural factors in demographic studies and policy-making aimed at addressing population growth and family planning. The insights from this study can be used to inform targeted interventions aimed at improving literacy and delaying marriage to manage family size and promote sustainable development.
 
 \newpage
 
